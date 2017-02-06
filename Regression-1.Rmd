@@ -1,0 +1,102 @@
+---
+title: "Untitled"
+author: "Vicki Hertzberg"
+date: "February 8, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Linear Regression
+
+# Understanding Linear Regresson
+
+Univariate:
+
+We want to determine a straight line that determines the relationship between x, some independent (predictor) variable, and y, an outcome or dependent variable.
+
+You will recall from high school algebra that the equation for a straight line is:
+
+\begin{equation}
+  y = \alpha + \beta x
+\end{equation}
+
+where \alpha is the y-intercept (the value of y when x=0)
+and \beta is the slope of the line (the amount that y will increase by with every unit increase in x).
+
+A classic example is the height data from Sir Francis Galton, a 19th century statistician. He collected height data on 905 children born to 205 parents. The dataset is part of the R package HistData, which contains Data Sets from the History of Statistics and Data Visualization. The variables are the height of the child (as an adult) and the mid-parent height, that is the average of the parents' heights.
+
+So let's load up the data by installing that package now:
+
+```{r}
+# call up the HistData package and datasets
+library(HistData)
+```
+
+If you go to the Environment tab, you will see the Global Environment. Click on "package:HistData" and you will see the Galton dataset.
+
+Let's see what is in there:
+
+```{r}
+# see what is in the Galton dataset
+summary(Galton)
+```
+
+Let's develop the model on ~90% of the dataset, then test it on the remaining ~10% of the data. In the datascience world, we call that first step "training" the model. 
+
+```{r}
+# divide the dataset into a training and a testing set based on a random uniform number on fixed seed
+set.seed(20170208)
+Galton$group <- runif(length(Galton$parent), min = 0, max = 1)
+summary(Galton)
+Galton.train <- subset(Galton, group <= 0.90)
+Galton.test <- subset(Galton, group > 0.90)
+
+```
+
+Now let's graph our training set data.
+```{r}
+#graph child on parent for testing dataset
+plot(child ~ parent, data = Galton.test)
+```
+
+
+Let's do the regression now on the training set. Linear regression is performed with the R function "lm" and takes the form
+
+object.name <- lm(y ~ x, data = data_set_name)
+
+Let's do that now with the Galton data:
+
+```{r}
+# linear regression of child height on mid-parent height in the training dataset
+reg1 <- lm(child ~ parent, data = Galton.train)
+summary(reg1)
+```
+ Now the way that this is working is to estimate values for \alpha and \beta such that when you plug in your given independent variables, you get predicted dependent variables that are close to the observed values. In statistics we optimize this closeness by minimizing the sum-of-squared-residuals, that is 
+ 
+ \begin{equation}
+ \sum\limits_{i=1}^n (Y_{obs.i} - Y_{pred.i})^2
+ \end{equation}
+ 
+ So let's look at how we did. First let's calculate the observed and predicted values in the training and testing datasets. 
+```{r}
+# get predicted values in the training and testing dataset
+Galton.train$pred.child <- predict(reg1, newdata = Galton.train)
+Galton.test$pred.child <- predict(reg1, newdata=Galton.test)
+
+# calculate residuals in the training and testing dataset
+Galton.train$resid <- Galton.train$child - Galton.train$pred.child
+Galton.test$resid <- Galton.test$child - Galton.test$pred.child
+```
+
+Now that we have calculated these values, let's look at some simple plots. The Companion to Applied Regression (aka car) package, has some good functionality for this
+
+```{r}
+library(car)
+#get the residual plots
+residualPlots(reg1)
+
+```
+

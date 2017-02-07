@@ -100,3 +100,22 @@ residualPlots(reg1)
 
 ```
 
+Let's look at how well we do in the testing dataset. First let's plot the data.
+
+```{r}
+#plot test dataset
+plot(child ~ parent, data = Galton.test)
+```
+
+Now let's look at the residual plots:
+
+```{r}
+#plot residual versus X
+plot(resid~parent, data = Galton.test)
+
+```
+```{r}
+#plot residual v predicted
+plot(resid~pred.child, data = Galton.test)
+```
+

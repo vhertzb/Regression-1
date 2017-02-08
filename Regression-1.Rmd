@@ -265,9 +265,9 @@ Hmmmm....education and log2(income) remain highly significant, there is little r
 
 We can compare the results of these two analyses a little more cleanly using the stargazer package as follows:
 
-```{r}
+```{r results="asis"}
 # compare the results of the two regression models
-stargazer(prestige.mod1,prestige.mod2,title="Comparison of 2 Regression outputs",type="text",align=TRUE)
+stargazer(prestige.mod1,prestige.mod2,title="Comparison of 2 Regression outputs",type="html",align=TRUE)
 ```
 
 We conclude that we lose little by eliminating a predictor variable. This is also consistent with a principle of parsimony, also known as the KISS principle, or "Keep It Simple, Silly".
@@ -310,5 +310,43 @@ Let's run the qq-plot:
 # run the qq-plot
 qqPlot(prestige.mod1, id.n=3)
 # here, id.n identifies the n observations with the largest residuals in absolute value
+```
+
+Are there any outliers?
+
+```{r}
+ 
+#run Bonferroni test for outliers
+outlierTest(prestige.mod1)
+```
+
+Are there any points that are of high influence?
+
+```{r}
+
+#identify highly influential points
+influenceIndexPlot(prestige.mod1, id.n=3)
+```
+
+NB. If there are points that are a) outliers AND b) highly influential, these have potential to change the inference. You should consider removing them.
+
+How do we make heads or tails out of the plots above? One way is with an influence plot.
+```{r}
+#make influence plot
+influencePlot(prestige.mod1, id.n=3)
+```
+
+
+Another diagnostic is to test for heteroskedasticity (i.e., the variance of the error term is not constant).
+
+```{r}
+#test for heteroskedasticity
+ncvTest(prestige.mod1)
+```
+
+We also want to look for multicollinearity, that is are some of our independent variables highly correlated. We do this by looking at the Variance Inflation Factor (VIF). A GVIF > 4 suggests collinearity.
+
+```{r}
+vif(prestige.mod1)
 ```
 

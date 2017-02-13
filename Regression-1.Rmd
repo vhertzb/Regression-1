@@ -2,7 +2,10 @@
 title: "Regression-1"
 author: "Vicki Hertzberg"
 date: "February 8, 2017"
-output: html_document
+output:
+  html_document: default
+  pdf: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -31,8 +34,8 @@ You will recall from high school algebra that the equation for a straight line i
   y = \alpha + \beta x
 \end{equation}
 
-where \alpha is the y-intercept (the value of y when x=0)
-and \beta is the slope of the line (the amount that y will increase by with every unit increase in x).
+where $\alpha$ is the y-intercept (the value of y when x=0)
+and $\beta$ is the slope of the line (the amount that y will increase by with every unit increase in x).
 
 A classic example is the height data from Sir Francis Galton, a 19th century statistician. He collected height data on 905 children born to 205 parents. The dataset is part of the R package HistData, which contains Data Sets from the History of Statistics and Data Visualization. The variables are the height of the child (as an adult) and the mid-parent height, that is the average of the parents' heights.
 
@@ -77,7 +80,7 @@ summary(reg1)
 ```
 **Interpretation:** for each increase in parent height of 1 inch, the child height increases by 0.65 inches.
 
-Now the way that this is working is to estimate values for \alpha and \beta such that when you plug in your given independent variables, you get predicted dependent variables that are close to the observed values. In statistics we optimize this closeness by minimizing the sum-of-squared-residuals, that is 
+Now the way that this is working is to estimate values for $\alpha$ and $\beta$ such that when you plug in your given independent variables, you get predicted dependent variables that are close to the observed values. In statistics we optimize this closeness by minimizing the sum-of-squared-residuals, that is 
  
  \begin{equation}
  \sum\limits_{i=1}^n (Y_{obs.i} - Y_{pred.i})^2
@@ -108,21 +111,19 @@ Let's look at how well we do in the testing dataset. First let's plot the data.
 ```{r}
 #plot test dataset
 plot(child ~ parent, data = Galton.test)
+#overlay the regression line
+abline(a=23.85, b=0.65)
 ```
 
 Now let's look at the residual plots:
 
 ```{r}
-#set up the 0 line
-x0 <- 64
-parent <- seq(x0, 73, 0.01)
-resid <- rep(0, length(parent))
+
 
 #plot residual versus X
 plot(resid~parent, data = Galton.test)
 #overlay the zero line
-par(new=TRUE)
-plot(resid~parent, pch = 16, cex = .1, axes = FALSE, labels = FALSE)
+abline(0,0)
 
 ```
 ```{r}
@@ -147,9 +148,9 @@ As you have seen in these data, the y-values do not line up as a perfect linear 
   Y = \alpha + \beta x + \epsilon
 \end{equation}
 
-Recall from above that we estimate \alpha and \beta to minimize the sum of squared residuals.
+Recall from above that we estimate $\alpha$ and $\beta$ to minimize the sum of squared residuals.
 
-To do a statistical test on the slopes we have to make some assumptions. One of the assumptions is that \epsilon ~ N(0, \sigma^2), that is, that the errors between the observed and predicted values of Y take on a normal distribution with mean of 0 and variance of \sigma^2.
+To do a statistical test on the slopes we have to make some assumptions. One of the assumptions is that $\epsilon$ ~ N(0, $\sigma^2$), that is, that the errors between the observed and predicted values of Y take on a normal distribution with mean of 0 and variance of $\sigma^2$.
 
 We can formally test this assumption, but we can also do a qq-plot which will give us a visual representation of the same. We get this plot as follows:
 
@@ -242,13 +243,13 @@ From this output we see that if education increases by 1 year, then average pres
 
 For education we note that the p-value is < 2e-16.
 
-So we interpret that to reject the null hypothesis H_0: \beta_1 = 0.
+So we interpret that to reject the null hypothesis H_0: $\beta_1$ = 0.
 
 How do interpret the contributions of log2(income) and women?
 
 Another point to remark: the multiple R-squared is 0.84, indicating that 84% of the variability in average prestige rating is due to these three independent variables.
 
-Finally, the F-statistic of 165.4 is for testing the null hypothesis H_0: \beta_1 = \beta_2 = \beta_3 = 0. It is highly significant. (and that "squaring the t to get the F" trick only works for the univariate regression case...)
+Finally, the F-statistic of 165.4 is for testing the null hypothesis H_0: $\beta_1 = \beta_2 = \beta_3 = 0$. It is highly significant. (and that "squaring the t to get the F" trick only works for the univariate regression case...)
 
 Since the p-value for women does not reach the traditional significance level of 0.05, we might consider removing it from our model. Let's see what happens then...
 
@@ -267,7 +268,8 @@ We can compare the results of these two analyses a little more cleanly using the
 
 ```{r results="asis"}
 # compare the results of the two regression models
-stargazer(prestige.mod1,prestige.mod2,title="Comparison of 2 Regression outputs",type="html",align=TRUE)
+stargazer(prestige.mod1, prestige.mod2, title="Comparison of 2 Regression outputs",
+          type = "html", align=TRUE)
 ```
 
 We conclude that we lose little by eliminating a predictor variable. This is also consistent with a principle of parsimony, also known as the KISS principle, or "Keep It Simple, Silly".
